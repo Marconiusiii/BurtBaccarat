@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import random
+import math
+
 # Burt Baccarat 
 
 deck = {}
@@ -94,12 +96,12 @@ def outOfMoney():
 	print("\tAlright, starting you off again with ${}. Don't lose it all this time!".format(bank))
 
 def playerBet():
-	global bets
+	global bets, decisions
 	while True:
 		for key in bets:
 			if bets[key] > 0:
 				print("You have ${amount} on the {bet} bet.".format(amount=bets[key], bet=key))
-		print("Player, Banker, or Tie?")
+		print("Player, Banker, or Tie? Type 'x' and hit Enter to finish betting.")
 		choice = input("> ")
 		if choice == 'p':
 			print("How much on the Player Bet?")
@@ -120,6 +122,9 @@ def playerBet():
 			print("Zeroing out your bets.")
 			for key in bets:
 				bets[key] = 0
+			continue
+		elif choice == 'd':
+			print("Decision Table for the current game:\n{table}".format(table=decisions))
 			continue
 		elif choice == 'x':
 			print("Done Betting! Drawing cards...")
@@ -144,8 +149,57 @@ print("Great, starting off with ${bank}. Good luck!".format(bank=bank))
 playerHand = 0
 bankerHand = 0
 
+def vig(bet):
+	total = bet * 0.05
+	if bet < 25:
+		commission = math.ceil(total)
+	else:
+		commission = math.floor(total)
+	print("${vig} paid to the House for the vig.".format(vig=commission))
+	return commission
+
+
+def payout(outcome):
+	global bets, bank
+	if outcome == 'p':
+		if bets["Player"] > 0:
+			print("You win ${}!".format(bets["Player"]))
+			bank += bets["Player"]
+			bets["Player"] = 0
+		if bets["Banker"] > 0:
+			print("You lose ${}.".format(bets["Banker"]))
+			bank -= bets["Banker"]
+			bets["Banker"] = 0
+		if bets["Tie"] > 0:
+			print("You lose ${} from the Tie Bet.".format(bets["Tie"]))
+			bank -= bets["Tie"]
+			bets["Tie"] = 0
+	elif outcome == 'b':
+		if bets["Player"] > 0:
+			print("You lose ${}.".format(bets["Player"]))
+			bank -= bets["Player"]
+			bets["Player"] = 0
+		if bets["Banker"] > 0:
+			print("You won ${}!".format(bets["Banker"]))
+			bank += bets["Banker"]
+			bank -= vig(bets["Banker"])
+			bets["Banker"] = 0
+		if bets["Tie"] > 0:
+			print("You lost ${} from the Tie Bet.".format(bets["Tie"]))
+			bank -= bets["Tie"]
+			bets["Tie"] = 0
+	elif outcome == 't':
+		print("Player and Banker bets Push!")
+		if bets["Tie"] > 0:
+			print("You won ${} on the Tie Bet! Woo!".format(bets["Tie"]*8))
+			bank += bets["Tie"] * 8
+			for key in bets:
+				bets[key] = 0
+
+
 def baccarat():
-	global playerHand, bankerHand, bets, bank
+	global playerHand, bankerHand, decisions
+	outcome = ''
 	p1card, p1val = draw()
 	p2card, p2val = draw()
 	b1card, b1val = draw()
@@ -162,39 +216,42 @@ def baccarat():
 	print("Player draws {p1} and {p2} for a total of {amount}.".format(p1=p1card, p2=p2card, amount=playerHand))
 	print("Banker draws {b1} and {b2} for a total of {amount}.".format(b1=b1card, b2=b2card, amount=bankerHand))
 
-
-	if playerHand == 9 and bankerHand == 9 or playerHand == 8 and dealerHand == 8:
+	if playerHand == 9 and bankerHand == 9 or playerHand == 8 and bankerHand == 8:
 		print("We have a Tie!")
-
-	elif playerHand == 9 and dealerHand == 8:
+		outcome = 't'
+	elif playerHand == 9 and bankerHand == 8:
 		print("Player wins!")
-
+		outcome = 'p'
 	elif bankerHand == 9 and playerHand == 8:
 		print("Banker Wins!")
-
+		outcome = 'b'
 	elif playerHand in [6, 7]:
 		print("Player stands on {}.".format(playerHand))
 		if bankerHand == 7 and playerHand == 7:
 			print("We have a Tie!")
+			outcome = 't'
 		elif bankerHand == 7 and playerHand == 6:
 			print("Banker Wins!")
-
+			outcome = 'b'
 		elif bankerHand == 6 and playerHand == 7:
 			print("Player Wins!")
+			outcome = 'p'
 		else:
 			b3card, b3val = draw()
 			if bankerHand + b3val >= 10:
-				bankerHand += b3Val - 10
+				bankerHand += b3val - 10
 			else:
 				bankerHand += b3val
 			print("Banker draws {card} for a total of {amount}.".format(card=b3card, amount=b3val))
 			if bankerHand == playerHand:
 				print("We have a Tie!")
+				outcome = 't'
 			elif bankerHand < playerHand:
 				print("Player Wins!")
+				outcome = 'p'
 			elif bankerHand > playerHand:
 				print("Banker Wins!")
-
+				outcome = 'b'
 	else:
 		p3card, p3val = draw()
 		if playerHand + p3val >= 10:
@@ -213,12 +270,17 @@ def baccarat():
 			print("Banker stands with {}.".format(bankerHand))
 		if bankerHand == playerHand:
 			print("We have a Tie!")
+			outcome = 't'
 		elif bankerHand < playerHand:
 			print("Player Wins!")
+			outcome = 'p'
 		elif bankerHand > playerHand:
 			print("Banker Wins!")
+			outcome = 'b'
+	decisions.append(outcome)
+	payout(outcome)
 
-
+decisions = []
 
 # Begin Game Loop
 while True:
@@ -232,8 +294,11 @@ while True:
 		print("\nShuffling!\n")
 
 # Betting
-	print("You have ${}. Place your bets!".format(bank))
+	print("Place your bets!")
 	playerBet()
 
 # Drawing hands
 	baccarat()
+	print("You now have ${} in your bank.".format(bank))
+	input("Hit Enter for the next hand...")
+	continue
