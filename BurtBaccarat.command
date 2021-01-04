@@ -130,8 +130,12 @@ def playerBet():
 			print("Decision Table for the current game:\n{table}".format(table=decisions))
 			continue
 		elif choice == 'x':
-			print("Done Betting! Drawing cards...")
-			break
+			if bets["Tie"] > 0 or bets["Player"] > 0 or bets["Banker"] > 0:
+				print("Done Betting! Drawing cards...")
+				break
+			else:
+				print("You didn't place any bets, genius! Try again or no cards for you!")
+			continue
 		else:
 			print("That's not a choice! Try again!")
 			continue
