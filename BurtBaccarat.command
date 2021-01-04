@@ -236,13 +236,16 @@ def baccarat():
 		elif bankerHand == 6 and playerHand == 7:
 			print("Player Wins!")
 			outcome = 'p'
+		elif bankerHand > 7:
+			print("Banker Wins!")
+			outcome = 'b'
 		else:
 			b3card, b3val = draw()
 			if bankerHand + b3val >= 10:
 				bankerHand += b3val - 10
 			else:
 				bankerHand += b3val
-			print("Banker draws {card} for a total of {amount}.".format(card=b3card, amount=b3val))
+			print("Banker draws {card} for a total of {amount}.".format(card=b3card, amount=bankerHand))
 			if bankerHand == playerHand:
 				print("We have a Tie!")
 				outcome = 't'
