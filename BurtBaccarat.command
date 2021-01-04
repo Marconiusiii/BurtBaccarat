@@ -217,13 +217,13 @@ def baccarat():
 	print("Banker draws {b1} and {b2} for a total of {amount}.".format(b1=b1card, b2=b2card, amount=bankerHand))
 
 	if playerHand == 9 and bankerHand == 9 or playerHand == 8 and bankerHand == 8:
-		print("We have a Tie!")
+		print("We have a Natural Tie!")
 		outcome = 't'
-	elif playerHand == 9 and bankerHand < 9:
-		print("Player wins!")
+	elif playerHand in [8, 9] and bankerHand < playerHand:
+		print("Player wins with a Natural {}!".format(playerHand))
 		outcome = 'p'
-	elif bankerHand == 9 and playerHand < 9:
-		print("Banker Wins!")
+	elif bankerHand in [8, 9] and playerHand < bankerHand:
+		print("Banker Wins with a Natural {}!".format(bankerHand))
 		outcome = 'b'
 	elif playerHand in [6, 7]:
 		print("Player stands on {}.".format(playerHand))
