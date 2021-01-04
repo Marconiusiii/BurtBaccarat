@@ -72,6 +72,9 @@ def betPrompt():
 			if addMore.lower() in ['y', 'yes', 'atm', 'help', 'more money']:
 				outOfMoney()
 			continue
+		elif playerBet <= 0:
+			print("Nice try, hot shot. You have to make a bet to play!")
+			continue
 		else:
 			return playerBet
 
