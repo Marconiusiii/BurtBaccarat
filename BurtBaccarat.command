@@ -219,10 +219,10 @@ def baccarat():
 	if playerHand == 9 and bankerHand == 9 or playerHand == 8 and bankerHand == 8:
 		print("We have a Tie!")
 		outcome = 't'
-	elif playerHand == 9 and bankerHand == 8:
+	elif playerHand == 9 and bankerHand < 9:
 		print("Player wins!")
 		outcome = 'p'
-	elif bankerHand == 9 and playerHand == 8:
+	elif bankerHand == 9 and playerHand < 9:
 		print("Banker Wins!")
 		outcome = 'b'
 	elif playerHand in [6, 7]:
