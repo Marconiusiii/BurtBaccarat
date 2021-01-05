@@ -200,8 +200,8 @@ def payout(outcome):
 		if bets["Tie"] > 0:
 			print("You won ${} on the Tie Bet! Woo!".format(bets["Tie"]*8))
 			bank += bets["Tie"] * 8
-			for key in bets:
-				bets[key] = 0
+		for key in bets:
+			bets[key] = 0
 
 
 def baccarat():

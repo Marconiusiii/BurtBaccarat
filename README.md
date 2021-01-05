@@ -54,7 +54,7 @@ You'll be prompted to make a bet with the "Player, Banker, Tie?" prompt. You can
 
 ### Decisions Table
 
-Baccarat tables usually keep track of the winning outcomes over the course of the game. Some players use this to plan their bets, although every outcome is always totally random with no effect on the future hands. This is presented as a list of letters, with 'p' signifying a Player win, 'b' as a Banker win, and 't' as a Tie.
+Baccarat tables usually keep track of the winning outcomes over the course of the game. Some players use this to plan their bets, although every outcome is always totally random with no effect on the future hands. This is presented as a list of letters, with 'P' signifying a Player win, 'B' as a Banker win, and 'T' as a Tie. The game keeps track of a maximum of 10 hands at a time. Once you play more than 10 hands, the decision table will update accordingly. When the shoe is shuffled, the Decision Table will clear.
 
 ## Pay Table
 
