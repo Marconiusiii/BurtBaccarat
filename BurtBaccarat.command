@@ -208,8 +208,8 @@ def baccarat():
 	global playerHand, bankerHand, decisions
 	outcome = ''
 	p1card, p1val = draw()
-	p2card, p2val = draw()
 	b1card, b1val = draw()
+	p2card, p2val = draw()
 	b2card, b2val = draw()
 	if p1val + p2val >= 10:
 		playerHand = p1val + p2val - 10
@@ -287,7 +287,11 @@ def baccarat():
 		elif bankerHand > playerHand:
 			print("Banker Wins!")
 			outcome = 'b'
-	decisions.append(outcome)
+	if len(decisions) <= 10:
+		decisions.append(outcome.upper())
+	else:
+		decisions.pop(0)
+		decisions.append(outcome.upper())
 	payout(outcome)
 
 decisions = []
@@ -302,6 +306,7 @@ while True:
 		deck = deckGenerator()
 		del discard[:]
 		print("\nShuffling!\n")
+		decisions = []
 
 # Betting
 	print("Place your bets!")
