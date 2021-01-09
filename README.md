@@ -34,32 +34,110 @@ If the player hand has not drawn a card, the banker hand follows the same rules,
 
 If the player hand draws a card, the banker hand follows these rules on determining how to draw and stand. Don't worry, all of this is done automatically by the dealer both in this game and in the actual casino!
 
-*If Player draws 2 or 3, Banker draws if hand = 0-4 and stands if 5-7.
-*If Player draws 4 or 5, Banker draws if hand value = 0-5 and stands on 6-7.
-*If Player draws 6 or 7, Banker draws if hand value = 0-6 and stands on 7.
-*If Player draws 8, Banker draws if hand value = 0-2 and stands on 3-7.
-*If Player draws 1, 9, or Face Card/10, Banker draws if hand value = 0-3 and stands on 4-7.
+* If Player draws 2 or 3, Banker draws if hand = 0-4 and stands if 5-7.
+* If Player draws 4 or 5, Banker draws if hand value = 0-5 and stands on 6-7.
+* If Player draws 6 or 7, Banker draws if hand value = 0-6 and stands on 7.
+* If Player draws 8, Banker draws if hand value = 0-2 and stands on 3-7.
+* If Player draws 1, 9, or Face Card/10, Banker draws if hand value = 0-3 and stands on 4-7.
 
 ## Playing the Game
 
 After launching the game, you'll be prompted to set up your initial bankroll. Type in a number and hit Enter to get going.
 
-You'll be prompted to make a bet with the "Player, Banker, Tie?" prompt. You can bet on any or all of the bets and you are not restricted to just one. Here are the betting commands you can use at this prompt:
-*Player Bet - type 'p' and hit Enter
-*Banker Bet - type 'b' and hit Enter
-*Tie Bet - type 't' and hit Enter
-*Decisions Table - type 'd' and hit Enter
-*Zero out Bets - type 'z' and hit Enter
-*Finish Betting - type 'x' and hit Enter
+You'll be prompted to make a bet with the "Player, Banker, Tie, or Side Bet?" prompt. You can bet on any or all of the bets and you are not restricted to just one. Here are the betting commands you can use at this prompt:
+* Player Bet - type 'p' and hit Enter
+* Banker Bet - type 'b' and hit Enter
+* Tie Bet - type 't' and hit Enter
+* Side Bets - type 's' and hit Enter
+* Decisions Table - type 'd' and hit Enter
+* Zero out Bets - type 'z' and hit Enter
+* Finish Betting - type 'x' and hit Enter
+
+### Side Bets
+
+There are a variety of Side Bets that have appeared over the years to make the game more interesting. The most common Baccarat Side Bets are available after you've typed 's' to enter the Side Betting mode. You'll be prompted to enter your side bet. Use the following codes at this prompt to make a bet:
+
+* All Red: 'ar' - Bets that all the Player cards will be REd/Hearts and Diamonds.
+* All Black: 'ab' - Bets that all Player cards are all Black/Clubs and Spades.
+* Dragon 7: 'd7' - Betting that the Banker will win with a hand totaling 7 after drawing a 3rd card.
+* Dragon Bonus Banker: 'dbb' - Betting that the Banker wins by at least 4 points over the player hand total.
+* Dragon Bonus Playter: 'dbp' - Betting that the Player wins by at least 4 points over the Banker total.
+* Lucky Bonus: 'l' - Betting that the Banker wins with a hand totaling 6.
+* Panda 8: 'p' - Betting that the Player wins with a hand totaling 8 after drawing a third card.
+
+Check out the Pay Table to see the odds for these bets.
 
 ### Decisions Table
-
 Baccarat tables usually keep track of the winning outcomes over the course of the game. Some players use this to plan their bets, although every outcome is always totally random with no effect on the future hands. This is presented as a list of letters, with 'P' signifying a Player win, 'B' as a Banker win, and 'T' as a Tie. The game keeps track of a maximum of 10 hands at a time. Once you play more than 10 hands, the decision table will update accordingly. When the shoe is shuffled, the Decision Table will clear.
 
 ## Pay Table
 
-*Player Bets win 1:1
-*Banker Bets win 1:1 minus a 5% vig
-*Tie Bets win 8:1
+<table>
+<summary>Baccarat Pay Table</summary>
+<thead>
+<tr>
+<th scope="col">Bet</th>
+<th scope="col">Payout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Player Bet</th><td>1:1</td>
+</tr>
+<tr>
+<th scope="row">Banker Bet</th><td>1:1 -5% vig</td>
+</tr>
+<tr>
+<th scope="row">Tie Bet</th><td>8:1</td>
+</tr>
+<tr>
+<th scope="row">All Red</th><td>22:1</td>
+</tr>
+<tr>
+<th scope="row">All Black</th><td>24:1</td>
+</tr>
+<tr>
+<th scope="row">Dragon 7</th><td>40:1</td>
+</tr>
+<tr>
+<th scope="row">Lucky Bonus</th><td>18:1</td>
+</tr>
+<tr>
+<th scope="row">Panda 8</th><td>25:1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<summary>Dragon Bonus Payouts</summary>
+<thead>
+<tr>
+<th scope="col">Win Margin</th>
+<th scope=:col">Payout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">9 points</th><td>30:1</td>
+</tr>
+<tr>
+<th scope="row">8 points</th><td>10:1</td>
+</tr>
+<tr>
+<th scope="row">7 points</th><td>6:1</td>
+</tr>
+<tr>
+<th scope="row">6 points</th><td>4:1</td>
+</tr>
+<tr>
+<th scope="row">5 points</th><td>2:1</td>
+</tr>
+<tr>
+<th scope="row">4 points</th><td>1:1</td>
+</tr>
+<tr>
+<th scope="row">3 or less</th><td>Loss</td>
+</tr>
+</tbody>
+</table>
 
 Enjoy! Thanks for Playing!
