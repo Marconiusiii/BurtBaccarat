@@ -1,4 +1,4 @@
-# Burt Baccarat v.1.5
+# Burt Baccarat v.1.7.5
 Terminal-based Accessible Baccarat game built in Python 3.
 
 ## About
@@ -57,12 +57,15 @@ You'll be prompted to make a bet with the "Player, Banker, Tie, or Side Bet?" pr
 
 There are a variety of Side Bets that have appeared over the years to make the game more interesting. The most common Baccarat Side Bets are available after you've typed 's' to enter the Side Betting mode. You'll be prompted to enter your side bet. Use the following codes at this prompt to make a bet:
 
+* 3 Card Player: 'p3' - Bet that the Player wins with 3 cards.
+* 3 Card Banker: 'b3' - Bet the the Banker wins with 3 cards.
 * All Red: 'ar' - Bets that all the Player cards will be REd/Hearts and Diamonds.
 * All Black: 'ab' - Bets that all Player cards are all Black/Clubs and Spades.
 * Dragon 7: 'd7' - Betting that the Banker will win with a hand totaling 7 after drawing a 3rd card.
 * Dragon Bonus Banker: 'dbb' - Betting that the Banker wins by at least 4 points over the player hand total.
-* Dragon Bonus Playter: 'dbp' - Betting that the Player wins by at least 4 points over the Banker total.
+* Dragon Bonus Player: 'dbp' - Betting that the Player wins by at least 4 points over the Banker total.
 * Lucky Bonus: 'l' - Betting that the Banker wins with a hand totaling 6.
+* Ox 6: 'o' - Betting that the Player hand totals 6 and wins with 3 cards.
 * Panda 8: 'p' - Betting that the Player wins with a hand totaling 8 after drawing a third card.
 
 Check out the Pay Table to see the odds for these bets.
@@ -73,7 +76,7 @@ Baccarat tables usually keep track of the winning outcomes over the course of th
 ## Pay Table
 
 <table>
-<summary>Baccarat Pay Table</summary>
+<caption>Baccarat Pay Table</caption>
 <thead>
 <tr>
 <th scope="col">Bet</th>
@@ -91,6 +94,12 @@ Baccarat tables usually keep track of the winning outcomes over the course of th
 <th scope="row">Tie Bet</th><td>8:1</td>
 </tr>
 <tr>
+<th scope="row">3 Card Player</th><td>4:1</td>
+</tr>
+<tr>
+<th scope="row">3 Card Banker</th><td>5:1</td>
+</tr>
+<tr>
 <th scope="row">All Red</th><td>22:1</td>
 </tr>
 <tr>
@@ -101,6 +110,9 @@ Baccarat tables usually keep track of the winning outcomes over the course of th
 </tr>
 <tr>
 <th scope="row">Lucky Bonus</th><td>18:1</td>
+</tr>
+<tr>
+<th scope="row">Ox 6</th><td>40:1</td>
 </tr>
 <tr>
 <th scope="row">Panda 8</th><td>25:1</td>

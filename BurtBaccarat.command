@@ -3,7 +3,8 @@
 import random
 import math
 
-# Burt Baccarat 
+# Version Incrementer
+version = "1.7.5"
 
 deck = {}
 discard = []
@@ -100,12 +101,15 @@ def outOfMoney():
 
 sideBets = {
 "Panda 8": 0,
+"Ox 6": 0,
 "All Black": 0,
 "All Red": 0,
 "Dragon Bonus Banker": 0,
 "Dragon Bonus Player": 0,
 "Dragon 7": 0,
-"Lucky Bonus": 0
+"Lucky Bonus": 0,
+"3 Card Player": 0,
+"3 Card Banker": 0
 }
 
 def sideBetting():
@@ -113,7 +117,17 @@ def sideBetting():
 	while True:
 		print("Choose your Side Bet!")
 		choice = input("> ")
-		if choice.lower() == 'ar':
+		if choice == "p3":
+			print("How much on the THree Card Player?")
+			sideBets["3 Card Player"] = betPrompt()
+			print("Ok, ${} on the Three Card Player.".format(sideBets["3 Card Player"]))
+			continue
+		elif choice == "b3":
+			print("How much on the Three Card Banker?")
+			sideBets["3 Card Banker"] = betPrompt()
+			print("Ok, ${} on the Three Card Banker.".format(sideBets["3 Card Banker"]))
+			continue
+		elif choice.lower() == 'ar':
 			print("How Much on All Red?")
 			sideBets["All Red"] = betPrompt()
 			print("Ok, ${} on All Red.".format(sideBets["All Red"]))
@@ -122,6 +136,11 @@ def sideBetting():
 			print("How much on All Black?")
 			sideBets["All Black"] = betPrompt()
 			print("Ok, ${} on All Black.".format(sideBets["All Black"]))
+			continue
+		elif choice.lower() == 'o':
+			print("How much on the Ox 6?")
+			sideBets["Ox 6"] = betPrompt()
+			print("Ok, ${} on the Ox 6.".format(sideBets["Ox 6"]))
 			continue
 		elif choice.lower() == 'p':
 			print("How much on the Panda 8?")
@@ -205,7 +224,7 @@ def playerBet():
 			continue
 
 # Game Start
-print("Burt Baccarat v.1.5\n\tBy: Marco Salsiccia")
+print("Burt Baccarat v.{version}\n\tBy: Marco Salsiccia".format(version=version))
 
 print("How much would you like to cash in for your bank?")
 while True:
@@ -370,6 +389,25 @@ def baccarat():
 
 # Payout and Side Bets
 	payout(outcome)
+
+	if sideBets["3 Card Player"] > 0:
+		if len(pHand) == 3 and playerHand > bankerHand:
+			print("You won ${} on the Three Card Player!".format(sideBets["3 Card Player"] * 4))
+			bank += sideBets["3 Card Player"] * 4
+		else:
+			print("You lost ${} from the Three Card Player.".format(sideBets["3 Card Player"]))
+			bank -= sideBets["3 Card Player"]
+		sideBets["3 Card Player"] = 0
+
+	if sideBets["3 Card Banker"] > 0:
+		if len(bHand) == 3 and bankerHand > playerHand:
+			print("You won ${} on the THree Card Banker!".format(sideBets["3 Card Banker"] * 5))
+			bank += sideBets["3 Card Banker"] * 5
+		else:
+			print("You lost ${} from the Three Card Banker.".format(sideBets["3 Card Banker"]))
+			bank -= sideBets["3 Card Banker"]
+		sideBets["3 Card Banker"] = 0
+
 	black = ['es', 'bs']
 	red = ['ts', 'ds']
 	if sideBets["All Black"] > 0:
@@ -377,51 +415,45 @@ def baccarat():
 		if p1card[-2:] in black and p2card[-2:] in black:
 			print("Wow, you won ${} on All Black!".format(sideBets["All Black"] * 24))
 			bank += sideBets["All Black"] * 24
-			sideBets["All Black"] = 0
 		else:
 			print("You lost ${} from the All Black.".format(sideBets["All Black"]))
 			bank -= sideBets["All Black"]
-			sideBets["All Black"] = 0
+		sideBets["All Black"] = 0
 	if sideBets["All Red"] > 0:
 		if p1card[-2:] in red and p2card[-2:] in red:
 			print("Woo! You won ${} on the All Red!".format(sideBets["All Red"] * 22))
 			bank += sideBets["All Red"] * 22
-			sideBets["All Red"] = 0
 		else:
 			print("You lost ${} from the All Red.".format(sideBets["All Red"]))
 			bank -= sideBets["All Red"]
-			sideBets["All Red"] = 0
+		sideBets["All Red"] = 0
 	if sideBets["Dragon 7"] > 0:
 		if len(bHand) == 3 and bankerHand == 7:
 			print("Boy Howdy! You just won ${} on the Dragon 7!".format(sideBets["Dragon 7"] * 40))
 			bank += sideBets["Dragon 7"] * 40
-			sideBets["Dragon 7"] = 0
 		else:
 			print("You lost ${} from the Dragon 7.".format(sideBets["Dragon 7"]))
 			bank -= sideBets["Dragon 7"]
-			sideBets["Dragon 7"] = 0
-	if sideBets["Dragon Bonus Banker"] > 0 or sideBets["Dragon Bonus Player"] > 0:
+		sideBets["Dragon 7"] = 0
+	if sideBets["Dragon Bonus Banker"] > 0:
 		odds = 0
-		if sideBets["Dragon Bonus Banker"] > 0:
-			margin = bankerHand - playerHand
-		elif sideBets["Dragon Bonus Player"] > 0:
-			margin = playerHand - bankerHand
-		if margin == 9:
+		bankerMargin = bankerHand - playerHand
+		if bankerMargin == 9:
 			odds = 30
-		elif margin == 8:
+		elif bankerMargin == 8:
 			odds = 10
-		elif margin == 7:
+		elif bankerMargin == 7:
 			odds = 6
-		elif margin == 6:
+		elif bankerMargin == 6:
 			odds = 4
-		elif margin == 5:
+		elif bankerMargin == 5:
 			odds = 2
-		elif margin == 4:
+		elif bankerMargin == 4:
 			odds = 1
-		elif margin <= 3:
-			odds = 0	
+		elif bankerMargin <= 3:
+			odds = 0
 
-		if sideBets["Dragon Bonus Banker"] > 0 and bankerHand in [8, 9] and bankerHand > playerHand:
+		if bankerHand >= playerHand:
 			bankerWin = sideBets["Dragon Bonus Banker"] * odds
 			if bankerWin > 0:
 				print("You won ${} on the Dragon Bonus for Banker!".format(bankerWin))
@@ -429,14 +461,30 @@ def baccarat():
 			else:
 				print("You lost ${} from the Dragon Bonus for Banker.".format(sideBets["Dragon Bonus Banker"]))
 				bank -= sideBets["Dragon Bonus Banker"]
-				sideBets["Dragon Bonus Banker"] = 0
 		else:
-			if sideBets["Dragon Bonus Banker"] > 0:
-				print("You lost ${} from the Dragon Bonus for Banker.".format(sideBets["Dragon Bonus Banker"]))
-				bank -= sideBets["Dragon Bonus Banker"]
-				sideBets["Dragon Bonus Banker"] = 0
+			print("You lost ${} from the Dragon Bonus for Banker.".format(sideBets["Dragon Bonus Banker"]))
+			bank -= sideBets["Dragon Bonus Banker"]
+		sideBets["Dragon Bonus Banker"] = 0
 
-		if sideBets["Dragon Bonus Player"] > 0 and playerHand in [8, 9] and playerHand > bankerHand:
+	if sideBets["Dragon Bonus Player"] > 0:
+		odds = 0
+		playerMargin = playerHand - bankerHand
+		if playerMargin == 9:
+			odds = 30
+		elif playerMargin == 8:
+			odds = 10
+		elif playerMargin == 7:
+			odds = 6
+		elif playerMargin == 6:
+			odds = 4
+		elif playerMargin == 5:
+			odds = 2
+		elif playerMargin == 4:
+			odds = 1
+		else:
+			odds = 0\
+
+		if playerHand >= bankerHand:
 			playerWin = sideBets["Dragon Bonus Player"] * odds
 			if playerWin > 0:
 				print("You won ${} from the Dragon Bonus for Player!".format(playerWin))
@@ -444,12 +492,11 @@ def baccarat():
 			else:
 				print("You lost ${} from the Dragon Bonus Player.".format(sideBets["Dragon Bonus Player"]))
 				bank -= sideBets["Dragon Bonus Player"]
-				sideBets["Dragon Bonus Player"] = 0
 		else:
-			if sideBets["Dragon Bonus Player"] > 0:
-				print("You lost ${} from the Dragon Bonus for Player.".format(sideBets["Dragon Bonus Player"]))
-				bank -= sideBets["Dragon Bonus Player"]
-				sideBets["Dragon Bonus Player"] = 0
+			print("You lost ${} from the Dragon Bonus for Player.".format(sideBets["Dragon Bonus Player"]))
+			bank -= sideBets["Dragon Bonus Player"]
+		sideBets["Dragon Bonus Player"] = 0
+
 	if sideBets["Lucky Bonus"] > 0:
 		if bankerHand == 6:
 			print("You won ${} on the Lucky Bonus!".format(sideBets["Lucky Bonus"] * 18))
@@ -459,6 +506,16 @@ def baccarat():
 			print("You lost ${} from the Lucky Bonus.".format(sideBets["Lucky Bonus"]))
 			bank -= sideBets["Lucky Bonus"]
 			sideBets["Lucky Bonus"] = 0
+
+	if sideBets["Ox 6"] > 0:
+		if len(pHand) == 3 and playerHand == 6:
+			print("Holy Cows! You just won ${} on the Ox 6!".format(sideBets["Ox 6"] * 40))
+			bank += sideBets["Ox 6"] * 40
+		else:
+			print("You lost ${} from the Ox 6".format(sideBets["Ox 6"]))
+			bank -= sideBets["Ox 6"]
+		sideBets["Ox 6"] = 0
+
 	if sideBets["Panda 8"] > 0:
 		if len(pHand) == 3 and playerHand == 8:
 			print("Wow! You won ${} on the Panda 8!".format(sideBets["Panda 8"] * 25))
