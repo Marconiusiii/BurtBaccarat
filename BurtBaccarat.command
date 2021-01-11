@@ -4,7 +4,7 @@ import random
 import math
 
 # Version Incrementer
-version = "1.7.5"
+version = "1.8"
 
 deck = {}
 discard = []
@@ -528,18 +528,29 @@ def baccarat():
 
 decisions = []
 
+def burn():
+	i = 0
+	for i in range(10):
+		burn, burnVal = draw()
+		i += 1
+	print("\n\tBurning 10 Cards!\n")
+
+print("\n\tShuffling the Deck!\n")
+burn()
+
 # Begin Game Loop
 while True:
 
 	if bank <= 0:
 		outOfMoney()
 
-	if len(deck) < 8:
+	if len(deck) <= 10:
 		deck = deckGenerator()
 		del discard[:]
-		print("\nShuffling!\n")
+		print("\nShuffling the Deck!\n")
+		burn()
 		decisions = []
-
+		print(discard)
 # Betting
 	print("Place your bets!")
 	playerBet()

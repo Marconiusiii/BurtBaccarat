@@ -1,4 +1,4 @@
-# Burt Baccarat v.1.7.5
+# Burt Baccarat v.1.8
 Terminal-based Accessible Baccarat game built in Python 3.
 
 ## About
@@ -16,7 +16,7 @@ $ git pull https://www.github.com/Marconiusiii/BurtBaccarat
 
 ## What is Baccarat?
 
-Baccarat is a very simple game to play. All you have to do is guess whether the Player or Banker will win, or if they will tie. Baccarat is based entirely on luck and the players don't gave to do anything other than make their bet and wait for the outcome of the cards. The game is played automatically by the dealer and the cards are drawn out of an 8 deck shoe.
+Baccarat is a very simple game to play. All you have to do is guess whether the Player or Banker will win, or if they will tie. Baccarat is based entirely on luck and the players don't gave to do anything other than make their bet and wait for the outcome of the cards. The game is played automatically by the dealer and the cards are drawn out of an 8 deck shoe. When the shoe is shuffled, the first 10 cards are burned before play starts.
 
 Players do not receive individual hands against the dealer like Blackjack. Rather the dealer only deals out one set of cards for the collective Player spot and another set of cards for the Banker spot.
 
