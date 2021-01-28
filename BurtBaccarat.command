@@ -3,8 +3,8 @@
 import random
 import math
 
-# Version Incrementer
-version = "1.8"
+# Version Incrementor
+version = "1.8.5"
 
 deck = {}
 discard = []
@@ -557,6 +557,6 @@ while True:
 
 # Drawing hands
 	baccarat()
-	print("You now have ${} in your bank.".format(bank))
-	input("Hit Enter for the next hand...")
+	print("You now have ${} in your bank.\n\n".format(bank))
+	#input("Hit Enter for the next hand...")
 	continue

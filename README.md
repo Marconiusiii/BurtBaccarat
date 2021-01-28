@@ -1,4 +1,4 @@
-# Burt Baccarat v.1.8
+# Burt Baccarat v.1.8.5
 Terminal-based Accessible Baccarat game built in Python 3.
 
 ## About
