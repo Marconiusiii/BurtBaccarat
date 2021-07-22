@@ -3,8 +3,8 @@
 import random
 import math
 
-# Version Incrementor
-version = "1.8.5"
+# Version Incrementer
+version = "1.8.6"
 
 deck = {}
 discard = []
@@ -217,14 +217,14 @@ def playerBet():
 				print("Done Betting! Drawing cards...")
 				break
 			else:
-				print("You didn't place any bets, genius! Try again or no cards for you!")
-			continue
+				print("Burning a hand with no bets. What fun!")
+			break
 		else:
 			print("That's not a choice! Try again!")
 			continue
 
 # Game Start
-print("Burt Baccarat v.{version}\n\tBy: Marco Salsiccia".format(version=version))
+print("🎴 Burt Baccarat v.{version}\n\tBy: Marco Salsiccia".format(version=version))
 
 print("How much would you like to cash in for your bank?")
 while True:

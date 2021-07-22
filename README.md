@@ -1,4 +1,4 @@
-# Burt Baccarat v.1.8.5
+# Burt Baccarat v.1.8.6
 Terminal-based Accessible Baccarat game built in Python 3.
 
 ## About
@@ -44,7 +44,7 @@ If the player hand draws a card, the banker hand follows these rules on determin
 
 After launching the game, you'll be prompted to set up your initial bankroll. Type in a number and hit Enter to get going.
 
-You'll be prompted to make a bet with the "Player, Banker, Tie, or Side Bet?" prompt. You can bet on any or all of the bets and you are not restricted to just one. Here are the betting commands you can use at this prompt:
+You'll be prompted to make a bet with the "Player, Banker, Tie, or Side Bet?" prompt. You can bet on any or all of the bets and you are not restricted to just one. You may also just type 'x' and hit Enter without entering any bets to burn through a hand. Here are the betting commands you can use at this prompt:
 * Player Bet - type 'p' and hit Enter
 * Banker Bet - type 'b' and hit Enter
 * Tie Bet - type 't' and hit Enter
