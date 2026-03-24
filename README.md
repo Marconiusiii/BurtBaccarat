@@ -15,6 +15,7 @@ This project now separates the reusable game engine from the terminal interface 
 - `burtBaccarat/shoe.py`: eight-deck shoe and burn handling
 - `burtBaccarat/rules.py`: core Baccarat dealing and third-card rules
 - `burtBaccarat/payouts.py`: main and side-bet settlement
+- `burtBaccarat/session.py`: bankroll, bets, shoe state, and round flow
 - `burtBaccarat/cli.py`: interactive terminal flow
 - `tests/`: regression coverage for rules and payouts
 
@@ -69,6 +70,7 @@ The intended integration point for future ports is the pure engine layer:
 - `playRound()` in `burtBaccarat/rules.py`
 - `mainDelta()` in `burtBaccarat/payouts.py`
 - `sideDelta()` in `burtBaccarat/payouts.py`
+- `GameSession` in `burtBaccarat/session.py`
 - `Shoe` in `burtBaccarat/shoe.py`
 
 That keeps UI code separate from rule enforcement and makes automated testing much easier.
