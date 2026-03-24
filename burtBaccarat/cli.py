@@ -7,12 +7,17 @@ from .rules import playRound
 from .shoe import Shoe
 
 
-version = "1.9.0"
+version = "2.0.0"
+
+
+class QuitGame(Exception):
+	pass
 
 
 @dataclass
 class GameState:
 	bank: int
+	startBank: int
 	bets: dict[str, int] = field(default_factory=lambda: {name: 0 for name in mainBets})
 	sideBets: dict[str, int] = field(default_factory=lambda: {name: 0 for name in sideBets})
 	decisions: list[str] = field(default_factory=list)
@@ -25,11 +30,35 @@ class GameState:
 			self.sideBets[name] = 0
 
 
+def quitText(state: GameState) -> str:
+	diff = state.bank - state.startBank
+	if diff > 0:
+		return f"You leave ${diff} ahead. The casino files a tiny complaint and the cards glare at your back."
+	if diff < 0:
+		return f"You leave ${abs(diff)} down. The house thanks you for your donation and promises to spend it irresponsibly."
+	return "You leave exactly even. Somehow you have achieved the spiritual middle seat of gambling."
+
+
+def quitNow(state: GameState) -> None:
+	print(quitText(state))
+	raise QuitGame()
+
+
+def readInput(prompt: str, state: GameState | None = None) -> str:
+	value = input(prompt).strip()
+	if value.lower() == "q":
+		if state is None:
+			print("Quitting the game. The dealer shrugs and sweeps the cards back into the shoe.")
+			raise QuitGame()
+		quitNow(state)
+	return value
+
+
 def getBank() -> int:
 	print("How much would you like to cash in for your bank?")
 	while True:
 		try:
-			bank = int(input("$"))
+			bank = int(readInput("$"))
 		except ValueError:
 			print("That wasn't a number. Try again.")
 			continue
@@ -39,10 +68,10 @@ def getBank() -> int:
 		return bank
 
 
-def getAmount(bank: int) -> int:
+def getAmount(bank: int, state: GameState | None = None) -> int:
 	while True:
 		try:
-			amount = int(input("\t$> "))
+			amount = int(readInput("\t$> ", state))
 		except ValueError:
 			print("\tThat wasn't a number!")
 			continue
@@ -62,7 +91,7 @@ def getCash(state: GameState) -> None:
 		print("\tYour chips are getting low. How much would you like to add?")
 	while True:
 		try:
-			cash = int(input("\t$> "))
+			cash = int(readInput("\t$> ", state))
 		except ValueError:
 			print("\tThat wasn't a number. Try again.")
 			continue
@@ -97,8 +126,8 @@ def setSideBets(state: GameState) -> None:
 		"l": "Lucky Bonus",
 	}
 	while True:
-		print("Choose your Side Bet! Type 'h' for help or 'x' to return.")
-		choice = input("> ").strip().lower()
+		print("Choose your Side Bet! Type 'h' for help, 'x' to return, or 'q' to quit.")
+		choice = readInput("> ", state).lower()
 		if choice == "x":
 			print("Returning to game....")
 			return
@@ -115,7 +144,8 @@ def setSideBets(state: GameState) -> None:
 				"\t'o': Ox 6\n"
 				"\t'p': Panda 8\n"
 				"\t'p3': 3 Card Player\n"
-				"\t'x': Exit Side Betting"
+				"\t'x': Exit Side Betting\n"
+				"\t'q': Quit Game"
 			)
 			continue
 		betName = codeMap.get(choice)
@@ -123,28 +153,28 @@ def setSideBets(state: GameState) -> None:
 			print("Invalid entry! Try again.")
 			continue
 		print(f"How much on the {betName}?")
-		state.sideBets[betName] = getAmount(state.bank)
+		state.sideBets[betName] = getAmount(state.bank, state)
 		print(f"Ok, ${state.sideBets[betName]} on the {betName}.")
 
 
 def takeBets(state: GameState) -> None:
 	while True:
 		showBets(state)
-		print("Player, Banker, Tie, or Side Bets? Type 'x' and hit Enter to finish betting.")
-		choice = input("> ").strip().lower()
+		print("Player, Banker, Tie, or Side Bets? Type 'x' to deal or 'q' to quit.")
+		choice = readInput("> ", state).lower()
 		if choice == "p":
 			print("How much on the Player Bet?")
-			state.bets["Player"] = getAmount(state.bank)
+			state.bets["Player"] = getAmount(state.bank, state)
 			print(f"Ok, ${state.bets['Player']} on the Player Bet.")
 			continue
 		if choice == "b":
 			print("How much on the Banker Bet?")
-			state.bets["Banker"] = getAmount(state.bank)
+			state.bets["Banker"] = getAmount(state.bank, state)
 			print(f"Ok, ${state.bets['Banker']} on the Banker Bet.")
 			continue
 		if choice == "t":
 			print("How much for the Tie Bet?")
-			state.bets["Tie"] = getAmount(state.bank)
+			state.bets["Tie"] = getAmount(state.bank, state)
 			print(f"Ok, ${state.bets['Tie']} on the Tie.")
 			continue
 		if choice == "s":
@@ -197,16 +227,20 @@ def doRound(state: GameState) -> None:
 
 def runCli() -> None:
 	print(f"Burt Baccarat v.{version}\n\tBy: Marco Salsiccia")
-	state = GameState(bank=getBank())
+	startBank = getBank()
+	state = GameState(bank=startBank, startBank=startBank)
 	print(f"Great, starting off with ${state.bank}. Good luck!")
 	print("\n\tShuffling the shoe!\n")
 	state.shoe.burn()
 	print("\n\tBurning 10 Cards!\n")
 
-	while True:
-		if state.bank <= 0:
-			getCash(state)
-		checkShuffle(state)
-		print("Place your bets!")
-		takeBets(state)
-		doRound(state)
+	try:
+		while True:
+			if state.bank <= 0:
+				getCash(state)
+			checkShuffle(state)
+			print("Place your bets!")
+			takeBets(state)
+			doRound(state)
+	except QuitGame:
+		return

@@ -1,4 +1,4 @@
-# Burt Baccarat v.1.9.0
+# Burt Baccarat v.2.0.0
 
 Terminal-based accessible Baccarat game built in Python 3.
 
@@ -25,6 +25,8 @@ Run the terminal game with:
 ```bash
 python3 BurtBaccarat.command
 ```
+
+Type `q` at any prompt during gameplay to quit cleanly.
 
 ## Running Tests
 
