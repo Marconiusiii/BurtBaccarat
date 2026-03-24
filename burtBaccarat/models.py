@@ -72,3 +72,11 @@ class RoundData:
 	@property
 	def bankerTotal(self) -> int:
 		return self.bankerHand.total
+
+	@property
+	def playerNat(self) -> bool:
+		return len(self.playerHand) == 2 and self.playerTotal in {8, 9}
+
+	@property
+	def bankerNat(self) -> bool:
+		return len(self.bankerHand) == 2 and self.bankerTotal in {8, 9}

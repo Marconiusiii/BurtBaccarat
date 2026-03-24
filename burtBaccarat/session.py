@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .payouts import mainBets, mainDelta, sideBets, sideDelta
+from .payouts import easyBets, mainBets, mainDelta, sideDelta, stdBets
 from .rules import playRound
 from .shoe import Shoe
 
@@ -11,10 +11,15 @@ from .shoe import Shoe
 class GameSession:
 	bank: int
 	startBank: int
+	gameType: str
 	bets: dict[str, int] = field(default_factory=lambda: {name: 0 for name in mainBets})
-	sideBets: dict[str, int] = field(default_factory=lambda: {name: 0 for name in sideBets})
+	sideBets: dict[str, int] = field(default_factory=dict)
 	decisions: list[str] = field(default_factory=list)
 	shoe: Shoe = field(default_factory=Shoe)
+
+	def __post_init__(self) -> None:
+		if not self.sideBets:
+			self.sideBets = {name: 0 for name in self.betList()}
 
 	def clearBets(self) -> None:
 		for name in self.bets:
@@ -30,6 +35,16 @@ class GameSession:
 
 	def setSideBet(self, betName: str, amount: int) -> None:
 		self.sideBets[betName] = amount
+
+	def betList(self) -> tuple[str, ...]:
+		if self.gameType == "easy":
+			return easyBets
+		return stdBets
+
+	def gameName(self) -> str:
+		if self.gameType == "easy":
+			return "Easy Baccarat"
+		return "Standard Baccarat"
 
 	def quitText(self) -> str:
 		diff = self.bank - self.startBank
@@ -59,6 +74,7 @@ class GameSession:
 	def startMsgs(self) -> list[str]:
 		self.shoe.burn()
 		return [
+			f"You picked {self.gameName()}.",
 			f"Great, starting off with ${self.bank}. Good luck!",
 			"\n\tShuffling the shoe!\n",
 			"\n\tBurning 10 Cards!\n",
@@ -75,8 +91,8 @@ class GameSession:
 		if len(self.decisions) > 10:
 			self.decisions.pop(0)
 
-		mainWin, mainMsgs = mainDelta(self.bets, roundData.outcome)
-		sideWin, sideMsgs = sideDelta(self.sideBets, roundData)
+		mainWin, mainMsgs = mainDelta(self.bets, roundData, self.gameType)
+		sideWin, sideMsgs = sideDelta(self.sideBets, roundData, self.gameType)
 		self.bank += mainWin + sideWin
 		self.clearBets()
 

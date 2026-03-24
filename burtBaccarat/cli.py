@@ -39,6 +39,18 @@ def getBank() -> int:
 		return bank
 
 
+def getGame() -> str:
+	print("Choose your game style before you cash in.")
+	while True:
+		print("Type 's' for Standard Baccarat or 'e' for Easy Baccarat.")
+		choice = readInput("> ").lower()
+		if choice == "s":
+			return "standard"
+		if choice == "e":
+			return "easy"
+		print("That isn't one of the game choices. Try again.")
+
+
 def getAmount(bank: int, state: GameSession | None = None) -> int:
 	while True:
 		try:
@@ -84,18 +96,23 @@ def showBets(state: GameSession) -> None:
 
 
 def setSideBets(state: GameSession) -> None:
-	codeMap = {
-		"p3": "3 Card Player",
-		"b3": "3 Card Banker",
-		"ar": "All Red",
-		"ab": "All Black",
-		"o": "Ox 6",
-		"p": "Panda 8",
-		"dbb": "Dragon Bonus Banker",
-		"dbp": "Dragon Bonus Player",
-		"d7": "Dragon 7",
-		"l": "Lucky Bonus",
-	}
+	if state.gameType == "easy":
+		codeMap = {
+			"dbb": "Dragon Bonus Banker",
+			"dbp": "Dragon Bonus Player",
+			"d7": "Dragon 7",
+			"p8": "Panda 8",
+		}
+	else:
+		codeMap = {
+			"dbb": "Dragon Bonus Banker",
+			"dbp": "Dragon Bonus Player",
+			"pp": "Player Pair",
+			"bp": "Banker Pair",
+			"ep": "Either Pair",
+			"ppp": "Perfect Pair Player",
+			"ppb": "Perfect Pair Banker",
+		}
 	while True:
 		print("Choose your Side Bet! Type 'h' for help, 'x' to return, or 'q' to quit.")
 		choice = readInput("> ", state).lower()
@@ -103,21 +120,29 @@ def setSideBets(state: GameSession) -> None:
 			print("Returning to game....")
 			return
 		if choice == "h":
-			print(
-				"Side Bet Codes:\n"
-				"\t'ab': All Black\n"
-				"\t'ar': All Red\n"
-				"\t'b3': 3 Card Banker\n"
-				"\t'd7': Dragon 7\n"
-				"\t'dbb': Dragon Bonus Banker\n"
-				"\t'dbp': Dragon Bonus Player\n"
-				"\t'l': Lucky Bonus\n"
-				"\t'o': Ox 6\n"
-				"\t'p': Panda 8\n"
-				"\t'p3': 3 Card Player\n"
-				"\t'x': Exit Side Betting\n"
-				"\t'q': Quit Game"
-			)
+			if state.gameType == "easy":
+				print(
+					"Side Bet Codes:\n"
+					"\t'd7': Dragon 7\n"
+					"\t'dbb': Dragon Bonus Banker\n"
+					"\t'dbp': Dragon Bonus Player\n"
+					"\t'p8': Panda 8\n"
+					"\t'x': Exit Side Betting\n"
+					"\t'q': Quit Game"
+				)
+			else:
+				print(
+					"Side Bet Codes:\n"
+					"\t'bp': Banker Pair\n"
+					"\t'dbb': Dragon Bonus Banker\n"
+					"\t'dbp': Dragon Bonus Player\n"
+					"\t'ep': Either Pair\n"
+					"\t'pp': Player Pair\n"
+					"\t'ppb': Perfect Pair Banker\n"
+					"\t'ppp': Perfect Pair Player\n"
+					"\t'x': Exit Side Betting\n"
+					"\t'q': Quit Game"
+				)
 			continue
 		betName = codeMap.get(choice)
 		if not betName:
@@ -179,8 +204,9 @@ def doRound(state: GameSession) -> None:
 
 def runCli() -> None:
 	print(f"Burt Baccarat v.{version}\n\tBy: Marco Salsiccia")
+	gameType = getGame()
 	startBank = getBank()
-	state = GameSession(bank=startBank, startBank=startBank)
+	state = GameSession(bank=startBank, startBank=startBank, gameType=gameType)
 	for msg in state.startMsgs():
 		print(msg)
 

@@ -1,5 +1,5 @@
 from burtBaccarat.models import Card, Hand, RoundData
-from burtBaccarat.payouts import sideDelta
+from burtBaccarat.payouts import mainDelta, sideDelta
 
 
 def makeRound(playerCards, bankerCards, outcome: str) -> RoundData:
@@ -13,16 +13,15 @@ def makeRound(playerCards, bankerCards, outcome: str) -> RoundData:
 
 def zeroBets() -> dict[str, int]:
 	return {
-		"Panda 8": 0,
-		"Ox 6": 0,
-		"All Black": 0,
-		"All Red": 0,
 		"Dragon Bonus Banker": 0,
 		"Dragon Bonus Player": 0,
 		"Dragon 7": 0,
-		"Lucky Bonus": 0,
-		"3 Card Player": 0,
-		"3 Card Banker": 0,
+		"Panda 8": 0,
+		"Player Pair": 0,
+		"Banker Pair": 0,
+		"Either Pair": 0,
+		"Perfect Pair Player": 0,
+		"Perfect Pair Banker": 0,
 	}
 
 
@@ -34,20 +33,20 @@ def testDragonSeven() -> None:
 	)
 	bets = zeroBets()
 	bets["Dragon 7"] = 10
-	delta, _ = sideDelta(bets, roundData)
+	delta, _ = sideDelta(bets, roundData, "easy")
 	assert delta == -10
 
 
-def testAllRed() -> None:
+def testDragonNatWin() -> None:
 	roundData = makeRound(
-		playerCards=[Card("2", "Hearts"), Card("3", "Diamonds"), Card("3", "Spades")],
-		bankerCards=[Card("10", "Clubs"), Card("10", "Spades")],
+		playerCards=[Card("9", "Hearts"), Card("10", "Diamonds")],
+		bankerCards=[Card("7", "Clubs"), Card("10", "Spades")],
 		outcome="p",
 	)
 	bets = zeroBets()
-	bets["All Red"] = 5
-	delta, _ = sideDelta(bets, roundData)
-	assert delta == -5
+	bets["Dragon Bonus Player"] = 5
+	delta, _ = sideDelta(bets, roundData, "standard")
+	assert delta == 5
 
 
 def testPandaNeedsWin() -> None:
@@ -58,5 +57,29 @@ def testPandaNeedsWin() -> None:
 	)
 	bets = zeroBets()
 	bets["Panda 8"] = 10
-	delta, _ = sideDelta(bets, roundData)
+	delta, _ = sideDelta(bets, roundData, "easy")
 	assert delta == -10
+
+
+def testEzBankPush() -> None:
+	roundData = makeRound(
+		playerCards=[Card("4", "Hearts"), Card("2", "Diamonds"), Card("Ace", "Clubs")],
+		bankerCards=[Card("2", "Clubs"), Card("3", "Spades"), Card("2", "Hearts")],
+		outcome="b",
+	)
+	bets = {"Player": 0, "Banker": 10, "Tie": 0}
+	delta, msgs = mainDelta(bets, roundData, "easy")
+	assert delta == 0
+	assert "pushes" in msgs[0]
+
+
+def testEitherPair() -> None:
+	roundData = makeRound(
+		playerCards=[Card("8", "Hearts"), Card("8", "Diamonds")],
+		bankerCards=[Card("2", "Clubs"), Card("9", "Spades")],
+		outcome="p",
+	)
+	bets = zeroBets()
+	bets["Either Pair"] = 10
+	delta, _ = sideDelta(bets, roundData, "standard")
+	assert delta == 50

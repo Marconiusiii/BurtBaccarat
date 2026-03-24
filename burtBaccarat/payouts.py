@@ -6,17 +6,20 @@ from .models import RoundData
 
 
 mainBets = ("Player", "Banker", "Tie")
-sideBets = (
-	"Panda 8",
-	"Ox 6",
-	"All Black",
-	"All Red",
+stdBets = (
+	"Dragon Bonus Banker",
+	"Dragon Bonus Player",
+	"Player Pair",
+	"Banker Pair",
+	"Either Pair",
+	"Perfect Pair Player",
+	"Perfect Pair Banker",
+)
+easyBets = (
 	"Dragon Bonus Banker",
 	"Dragon Bonus Player",
 	"Dragon 7",
-	"Lucky Bonus",
-	"3 Card Player",
-	"3 Card Banker",
+	"Panda 8",
 )
 
 bonusOdds = {
@@ -36,9 +39,24 @@ def vig(bet: int) -> int:
 	return math.floor(total)
 
 
-def mainDelta(bets: dict[str, int], outcome: str) -> tuple[int, list[str]]:
+def pairWin(hand) -> bool:
+	return hand.cards[0].rank == hand.cards[1].rank
+
+
+def perfPair(hand) -> bool:
+	return hand.cards[0] == hand.cards[1]
+
+
+def ezPush(roundData: RoundData, gameType: str) -> bool:
+	if gameType != "easy":
+		return False
+	return roundData.outcome == "b" and len(roundData.bankerHand) == 3 and roundData.bankerTotal == 7
+
+
+def mainDelta(bets: dict[str, int], roundData: RoundData, gameType: str) -> tuple[int, list[str]]:
 	delta = 0
 	msgs: list[str] = []
+	outcome = roundData.outcome
 
 	if outcome == "p":
 		if bets["Player"] > 0:
@@ -55,10 +73,16 @@ def mainDelta(bets: dict[str, int], outcome: str) -> tuple[int, list[str]]:
 			msgs.append(f"You lose ${bets['Player']}.")
 			delta -= bets["Player"]
 		if bets["Banker"] > 0:
-			fee = vig(bets["Banker"])
-			msgs.append(f"You won ${bets['Banker']}!")
-			msgs.append(f"${fee} paid to the House for the vig.")
-			delta += bets["Banker"] - fee
+			if ezPush(roundData, gameType):
+				msgs.append("Easy Baccarat push rule! Banker wins with a 3-card 7, so the Banker bet pushes.")
+			elif gameType == "easy":
+				msgs.append(f"You won ${bets['Banker']}!")
+				delta += bets["Banker"]
+			else:
+				fee = vig(bets["Banker"])
+				msgs.append(f"You won ${bets['Banker']}!")
+				msgs.append(f"${fee} paid to the House for the vig.")
+				delta += bets["Banker"] - fee
 		if bets["Tie"] > 0:
 			msgs.append(f"You lost ${bets['Tie']} from the Tie Bet.")
 			delta -= bets["Tie"]
@@ -71,57 +95,16 @@ def mainDelta(bets: dict[str, int], outcome: str) -> tuple[int, list[str]]:
 	return delta, msgs
 
 
-def sideDelta(bets: dict[str, int], roundData: RoundData) -> tuple[int, list[str]]:
+def sideDelta(bets: dict[str, int], roundData: RoundData, gameType: str) -> tuple[int, list[str]]:
 	delta = 0
 	msgs: list[str] = []
 	playerTotal = roundData.playerTotal
 	bankerTotal = roundData.bankerTotal
 	playerWin = roundData.outcome == "p"
 	bankerWin = roundData.outcome == "b"
+	natTie = roundData.playerNat and roundData.bankerNat and playerTotal == bankerTotal
 
-	playerColors = {card.color for card in roundData.playerHand}
-
-	if bets["3 Card Player"] > 0:
-		amount = bets["3 Card Player"]
-		if len(roundData.playerHand) == 3 and playerWin:
-			win = amount * 4
-			msgs.append(f"You won ${win} on the Three Card Player!")
-			delta += win
-		else:
-			msgs.append(f"You lost ${amount} from the Three Card Player.")
-			delta -= amount
-
-	if bets["3 Card Banker"] > 0:
-		amount = bets["3 Card Banker"]
-		if len(roundData.bankerHand) == 3 and bankerWin:
-			win = amount * 5
-			msgs.append(f"You won ${win} on the Three Card Banker!")
-			delta += win
-		else:
-			msgs.append(f"You lost ${amount} from the Three Card Banker.")
-			delta -= amount
-
-	if bets["All Black"] > 0:
-		amount = bets["All Black"]
-		if playerColors == {"black"}:
-			win = amount * 24
-			msgs.append(f"Wow, you won ${win} on All Black!")
-			delta += win
-		else:
-			msgs.append(f"You lost ${amount} from the All Black.")
-			delta -= amount
-
-	if bets["All Red"] > 0:
-		amount = bets["All Red"]
-		if playerColors == {"red"}:
-			win = amount * 22
-			msgs.append(f"Woo! You won ${win} on the All Red!")
-			delta += win
-		else:
-			msgs.append(f"You lost ${amount} from the All Red.")
-			delta -= amount
-
-	if bets["Dragon 7"] > 0:
+	if bets.get("Dragon 7", 0) > 0:
 		amount = bets["Dragon 7"]
 		if len(roundData.bankerHand) == 3 and bankerTotal == 7 and bankerWin:
 			win = amount * 40
@@ -131,11 +114,17 @@ def sideDelta(bets: dict[str, int], roundData: RoundData) -> tuple[int, list[str
 			msgs.append(f"You lost ${amount} from the Dragon 7.")
 			delta -= amount
 
-	if bets["Dragon Bonus Banker"] > 0:
+	if bets.get("Dragon Bonus Banker", 0) > 0:
 		amount = bets["Dragon Bonus Banker"]
 		margin = bankerTotal - playerTotal
 		odds = bonusOdds.get(margin, 0)
-		if bankerWin and odds > 0:
+		if natTie:
+			msgs.append("Dragon Bonus Banker pushes on a natural tie.")
+		elif roundData.bankerNat and bankerWin:
+			win = amount
+			msgs.append(f"You won ${win} on the Dragon Bonus for Banker!")
+			delta += win
+		elif bankerWin and odds > 0:
 			win = amount * odds
 			msgs.append(f"You won ${win} on the Dragon Bonus for Banker!")
 			delta += win
@@ -143,11 +132,17 @@ def sideDelta(bets: dict[str, int], roundData: RoundData) -> tuple[int, list[str
 			msgs.append(f"You lost ${amount} from the Dragon Bonus for Banker.")
 			delta -= amount
 
-	if bets["Dragon Bonus Player"] > 0:
+	if bets.get("Dragon Bonus Player", 0) > 0:
 		amount = bets["Dragon Bonus Player"]
 		margin = playerTotal - bankerTotal
 		odds = bonusOdds.get(margin, 0)
-		if playerWin and odds > 0:
+		if natTie:
+			msgs.append("Dragon Bonus Player pushes on a natural tie.")
+		elif roundData.playerNat and playerWin:
+			win = amount
+			msgs.append(f"You won ${win} from the Dragon Bonus for Player!")
+			delta += win
+		elif playerWin and odds > 0:
 			win = amount * odds
 			msgs.append(f"You won ${win} from the Dragon Bonus for Player!")
 			delta += win
@@ -155,27 +150,7 @@ def sideDelta(bets: dict[str, int], roundData: RoundData) -> tuple[int, list[str
 			msgs.append(f"You lost ${amount} from the Dragon Bonus for Player.")
 			delta -= amount
 
-	if bets["Lucky Bonus"] > 0:
-		amount = bets["Lucky Bonus"]
-		if bankerTotal == 6 and bankerWin:
-			win = amount * 18
-			msgs.append(f"You won ${win} on the Lucky Bonus!")
-			delta += win
-		else:
-			msgs.append(f"You lost ${amount} from the Lucky Bonus.")
-			delta -= amount
-
-	if bets["Ox 6"] > 0:
-		amount = bets["Ox 6"]
-		if len(roundData.playerHand) == 3 and playerTotal == 6 and playerWin:
-			win = amount * 40
-			msgs.append(f"Holy cows! You just won ${win} on the Ox 6!")
-			delta += win
-		else:
-			msgs.append(f"You lost ${amount} from the Ox 6.")
-			delta -= amount
-
-	if bets["Panda 8"] > 0:
+	if bets.get("Panda 8", 0) > 0:
 		amount = bets["Panda 8"]
 		if len(roundData.playerHand) == 3 and playerTotal == 8 and playerWin:
 			win = amount * 25
@@ -183,6 +158,56 @@ def sideDelta(bets: dict[str, int], roundData: RoundData) -> tuple[int, list[str
 			delta += win
 		else:
 			msgs.append(f"You lost ${amount} from the Panda 8.")
+			delta -= amount
+
+	if gameType == "standard" and bets.get("Player Pair", 0) > 0:
+		amount = bets["Player Pair"]
+		if pairWin(roundData.playerHand):
+			win = amount * 11
+			msgs.append(f"You won ${win} on the Player Pair!")
+			delta += win
+		else:
+			msgs.append(f"You lost ${amount} from the Player Pair.")
+			delta -= amount
+
+	if gameType == "standard" and bets.get("Banker Pair", 0) > 0:
+		amount = bets["Banker Pair"]
+		if pairWin(roundData.bankerHand):
+			win = amount * 11
+			msgs.append(f"You won ${win} on the Banker Pair!")
+			delta += win
+		else:
+			msgs.append(f"You lost ${amount} from the Banker Pair.")
+			delta -= amount
+
+	if gameType == "standard" and bets.get("Either Pair", 0) > 0:
+		amount = bets["Either Pair"]
+		if pairWin(roundData.playerHand) or pairWin(roundData.bankerHand):
+			win = amount * 5
+			msgs.append(f"You won ${win} on Either Pair!")
+			delta += win
+		else:
+			msgs.append(f"You lost ${amount} from Either Pair.")
+			delta -= amount
+
+	if gameType == "standard" and bets.get("Perfect Pair Player", 0) > 0:
+		amount = bets["Perfect Pair Player"]
+		if perfPair(roundData.playerHand):
+			win = amount * 25
+			msgs.append(f"You won ${win} on the Perfect Player Pair!")
+			delta += win
+		else:
+			msgs.append(f"You lost ${amount} from the Perfect Player Pair.")
+			delta -= amount
+
+	if gameType == "standard" and bets.get("Perfect Pair Banker", 0) > 0:
+		amount = bets["Perfect Pair Banker"]
+		if perfPair(roundData.bankerHand):
+			win = amount * 25
+			msgs.append(f"You won ${win} on the Perfect Banker Pair!")
+			delta += win
+		else:
+			msgs.append(f"You lost ${amount} from the Perfect Banker Pair.")
 			delta -= amount
 
 	return delta, msgs

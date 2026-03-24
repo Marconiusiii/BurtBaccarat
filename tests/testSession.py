@@ -17,20 +17,26 @@ class StubShoe:
 
 
 def testQuitTextWin() -> None:
-	session = GameSession(bank=150, startBank=100)
+	session = GameSession(bank=150, startBank=100, gameType="standard")
 	assert "ahead" in session.quitText()
 
 
 def testQuitTextLoss() -> None:
-	session = GameSession(bank=40, startBank=100)
+	session = GameSession(bank=40, startBank=100, gameType="standard")
 	assert "down" in session.quitText()
 
 
 def testShuffleMsgs() -> None:
-	session = GameSession(bank=100, startBank=100, shoe=StubShoe())
+	session = GameSession(bank=100, startBank=100, gameType="standard", shoe=StubShoe())
 	session.decisions = ["P", "B"]
 	msgs = session.shuffleMsgs()
 	assert len(msgs) == 2
 	assert session.decisions == []
 	assert session.shoe.shuffled is True
 	assert session.shoe.burned is True
+
+
+def testBetListEasy() -> None:
+	session = GameSession(bank=100, startBank=100, gameType="easy")
+	assert "Dragon 7" in session.betList()
+	assert "Player Pair" not in session.betList()
